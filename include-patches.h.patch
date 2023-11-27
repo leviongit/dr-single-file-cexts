@@ -1,0 +1,16 @@
+133,137d132
+< // These are conflicting with typedefs
+< #undef mrb_int
+< #undef mrb_bool
+< #undef mrb_float
+< 
+140c135
+< #include <dragonruby.h.inc>
+---
+> #include "dragonruby.h.inc"
+143,147d137
+< 
+< // Restoring macros
+< #define mrb_int(mrb, val) mrb_integer(mrb_to_int(mrb, val))
+< #define mrb_bool(o) (((o).w & ~(uintptr_t)MRB_Qfalse) != 0)
+< #define mrb_float(o) mrb_val_union(o).fp->f

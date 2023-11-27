@@ -1,0 +1,7 @@
+CompileFlags:
+  Add:
+    - -Wall
+    - -Wextra
+    - -xc
+    - -std=c2x
+    - -Iinclude
