@@ -16,9 +16,11 @@ typedef struct {
 static mrb_sym gt_sym;
 static mrb_sym lt_sym;
 
+#define MAX_SENSIBLE_SHIFT_OF_1 63
+
 minheap_t *minheap_new(mrb_state *mrb, uint8_t layers) {
-  assert(layers <= 63);
-  size_t size = (1 << layers) - 1;
+  assert(layers <= MAX_SENSIBLE_SHIFT_OF_1);
+  size_t size = (((size_t)(1)) << layers) - 1;
   minheap_t *minheap = mrb_malloc(mrb, sizeof(minheap_t));
 
   if (minheap == nullptr) {
