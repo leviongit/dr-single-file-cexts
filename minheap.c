@@ -106,11 +106,11 @@ minheap_mrb_value_ltcmp(mrb_state *mrb, mrb_value left, mrb_value right) {
 minheap_t *minheap_insert(mrb_state *mrb, minheap_t *minheap, mrb_value val) {
   if (minheap->size == minheap->capa) {
     mrb_value *new_data = mrb_realloc(
-        mrb, minheap->data, (minheap->capa * 2 - 1) * sizeof(mrb_value));
+        mrb, minheap->data, (minheap->capa * 2 + 1) * sizeof(mrb_value));
     if (new_data == nullptr) {
       mrb_raisef(mrb, mrb->eStandardError_class,
                  "oom: not enough memory to reallocate a %d-layer heap",
-                 __builtin_ctz((minheap->capa + 1) * 2));
+                 __builtin_ctz(minheap->capa + 1));
       __builtin_unreachable();
     }
     minheap->capa *= 2;
