@@ -224,6 +224,25 @@ mrb_value minheap_pop_m(mrb_state *mrb, mrb_value self) {
   return top;
 }
 
+mrb_value minheap_to_a(mrb_state *mrb, const minheap_t *minheap) {
+	return mrb_ary_new_from_values(mrb, minheap->size, minheap->data);
+}
+
+mrb_value minheap_to_a_m(mrb_state *mrb, mrb_value self) {
+	const minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
+	return minheap_to_a(mrb, minheap);
+}
+
+mrb_value minheap_size_m(mrb_state *mrb, mrb_value self) {
+	const minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
+	return mrb_int_value(mrb, minheap->size);
+}
+
+mrb_value minheap_empty_p_m(mrb_state *mrb, mrb_value self) {
+	const minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
+	return mrb_bool_value(minheap->size == 0);
+}
+
 void drb_register_c_extensions_with_api(mrb_state *mrb, struct drb_api_t *) {
   gt_sym = mrb_intern_static(mrb, ">", 1);
   lt_sym = mrb_intern_static(mrb, "<", 1);
@@ -241,4 +260,8 @@ void drb_register_c_extensions_with_api(mrb_state *mrb, struct drb_api_t *) {
                     MRB_ARGS_REQ(1));
   mrb_define_method(mrb, minheap_cls, "peek", minheap_peek_m, MRB_ARGS_NONE());
   mrb_define_method(mrb, minheap_cls, "pop", minheap_pop_m, MRB_ARGS_NONE());
+  mrb_define_method(mrb, minheap_cls, "to_a", minheap_to_a_m, MRB_ARGS_NONE());
+  mrb_define_method(mrb, minheap_cls, "size", minheap_size_m, MRB_ARGS_NONE());
+  mrb_define_method(mrb, minheap_cls, "length", minheap_size_m, MRB_ARGS_NONE());
+  mrb_define_method(mrb, minheap_cls, "empty?", minheap_empty_p_m, MRB_ARGS_NONE());
 }
