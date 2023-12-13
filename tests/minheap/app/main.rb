@@ -1,1 +1,1 @@
-$gtk.ffi_misc.gtk_dlopen('minheap')
+$gtk.ffi_misc.gtk_dlopen('libminheap')
