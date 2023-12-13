@@ -29,11 +29,15 @@ jobs:
       - uses: kfischer-okarin/download-dragonruby@v1
         with:
           license_tier: pro
+      - name: Install Clang 17
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod u+x llvm.sh
+          sudo ./llvm.sh 17
       - name: Apply patches
         run: |
           patch ./include/dragonruby.h include-patches.h.patch
           patch ./include/dragonruby.h.inc include-patches.inc.patch
       - name: Compile
         run: |
-          clang --version
-          clang ./minheap.c -g -O2 -std=c2x -I./include -fpic -shared -o native/linux-amd64/libminheap.so
+          clang-17 ./minheap.c -g -O2 -std=c2x -I./include -fpic -shared -o native/linux-amd64/libminheap.so
