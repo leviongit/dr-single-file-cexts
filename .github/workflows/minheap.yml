@@ -29,3 +29,7 @@ jobs:
       - uses: kfischer-okarin/download-dragonruby@v1
         with:
           license_tier: pro
+      - name: Apply patches
+        run: |
+          patch ./include/dragonruby.h include-patches.h.patch
+          patch ./include/dragonruby.h.inc include-patches.inc.patch
