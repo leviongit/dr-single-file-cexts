@@ -6,11 +6,6 @@ on:
     branches:
       - master
 
-env:
-  # For headless DragonRuby execution
-  SDL_AUDIODRIVER: dummy
-  SDL_VIDEODRIVER: dummy
-
 jobs:
   compile-and-test:
     runs-on: ${{ matrix.os }}
@@ -42,3 +37,11 @@ jobs:
         run: |
           mkdir -p native/linux-amd64
           clang-17 ./minheap.c -g -O2 -std=c2x -I./include -fpic -shared -o native/linux-amd64/libminheap.so
+      - name: Run Tests
+        env:
+          # For headless DragonRuby execution
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+        run: |
+          ./dragonruby tests/minheap --test tests.rb | tee tests.log
+          grep -Fq "[Game] 0 test(s) failed." tests.log
