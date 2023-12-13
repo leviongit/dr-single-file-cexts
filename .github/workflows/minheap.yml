@@ -40,4 +40,5 @@ jobs:
           patch ./include/dragonruby.h.inc include-patches.inc.patch
       - name: Compile
         run: |
+          mkdir -p native/linux-amd64
           clang-17 ./minheap.c -g -O2 -std=c2x -I./include -fpic -shared -o native/linux-amd64/libminheap.so
