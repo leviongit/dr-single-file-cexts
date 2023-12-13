@@ -22,3 +22,14 @@ def test_minheap_custom_objects(_args, assert)
   assert.equal! heap.pop, [7, { hp: 100 }]
   assert.equal! heap.pop, [10, 'Bob']
 end
+
+def test_performance_test(_args, assert)
+  numbers = (1..100_000).to_a.shuffle
+  heap = MinHeap.new
+  start_time = Time.now
+  numbers.each { |n| heap.insert n }
+  100_000.times { heap.pop }
+  end_time = Time.now
+  puts "Time elapsed #{(end_time - start_time) * 1000} milliseconds"
+  assert.ok!
+end
