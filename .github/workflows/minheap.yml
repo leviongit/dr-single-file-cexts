@@ -33,12 +33,6 @@ jobs:
         run: |
           patch ./include/dragonruby.h include-patches.h.patch
           patch ./include/dragonruby.h.inc include-patches.inc.patch
-      - uses: actions/upload-artifact@v3
-        with:
-          name: resulting-dragonruby-headers
-          path: |
-            ./include/dragonruby.h
-            ./include/dragonruby.h.inc
       - name: Compile
         run: |
           clang --version
