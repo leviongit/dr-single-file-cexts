@@ -13,9 +13,6 @@ typedef struct {
   mrb_value *data;
 } minheap_t;
 
-static mrb_sym gt_sym;
-static mrb_sym lt_sym;
-
 #define MAX_SENSIBLE_SHIFT_OF_1 63
 
 minheap_t *minheap_new(mrb_state *mrb, uint8_t layers) {
@@ -95,12 +92,20 @@ mrb_value minheap_get_right_child_of(const minheap_t *minheap, size_t idx) {
 
 [[clang::always_inline]] mrb_bool
 minheap_mrb_value_gtcmp(mrb_state *mrb, mrb_value left, mrb_value right) {
-  return mrb_bool(mrb_funcall_argv(mrb, left, gt_sym, 1, &right));
+  mrb_int cmp = mrb_cmp(mrb, left, right);
+  if (cmp == -2)
+    mrb_raisef(mrb, E_TYPE_ERROR, "comparison of %Y and %Y failed", left,
+               right);
+  return cmp == 1;
 }
 
 [[clang::always_inline]] mrb_bool
 minheap_mrb_value_ltcmp(mrb_state *mrb, mrb_value left, mrb_value right) {
-  return mrb_bool(mrb_funcall_argv(mrb, left, lt_sym, 1, &right));
+  mrb_int cmp = mrb_cmp(mrb, left, right);
+  if (cmp == -2)
+    mrb_raisef(mrb, E_TYPE_ERROR, "comparison of %Y and %Y failed", left,
+               right);
+  return cmp == -1;
 }
 
 minheap_t *minheap_insert(mrb_state *mrb, minheap_t *minheap, mrb_value val) {
@@ -225,28 +230,28 @@ mrb_value minheap_pop_m(mrb_state *mrb, mrb_value self) {
 }
 
 mrb_value minheap_to_a(mrb_state *mrb, const minheap_t *minheap) {
-	return mrb_ary_new_from_values(mrb, minheap->size, minheap->data);
+  return mrb_ary_new_from_values(mrb, minheap->size, minheap->data);
 }
 
 mrb_value minheap_to_a_m(mrb_state *mrb, mrb_value self) {
-	const minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
-	return minheap_to_a(mrb, minheap);
+  const minheap_t *minheap =
+      mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
+  return minheap_to_a(mrb, minheap);
 }
 
 mrb_value minheap_size_m(mrb_state *mrb, mrb_value self) {
-	const minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
-	return mrb_int_value(mrb, minheap->size);
+  const minheap_t *minheap =
+      mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
+  return mrb_int_value(mrb, minheap->size);
 }
 
 mrb_value minheap_empty_p_m(mrb_state *mrb, mrb_value self) {
-	const minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
-	return mrb_bool_value(minheap->size == 0);
+  const minheap_t *minheap =
+      mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
+  return mrb_bool_value(minheap->size == 0);
 }
 
 void drb_register_c_extensions_with_api(mrb_state *mrb, struct drb_api_t *) {
-  gt_sym = mrb_intern_static(mrb, ">", 1);
-  lt_sym = mrb_intern_static(mrb, "<", 1);
-
   struct RClass *minheap_cls =
       mrb_define_class(mrb, "MinHeap", mrb->object_class);
 
