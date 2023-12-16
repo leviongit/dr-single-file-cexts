@@ -263,7 +263,7 @@ void drb_register_c_extensions_with_api(mrb_state *mrb, struct drb_api_t *) {
                     MRB_ARGS_ANY());
   mrb_define_method(mrb, minheap_cls, "insert", minheap_insert_m,
                     MRB_ARGS_REQ(1));
-	mrb_define_method(mrb, minheap_cls, "<<", minheap_insert_m, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, minheap_cls, "<<", minheap_insert_m, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, minheap_cls, "peek", minheap_peek_m, MRB_ARGS_NONE());
   mrb_define_method(mrb, minheap_cls, "pop", minheap_pop_m, MRB_ARGS_NONE());
   mrb_define_method(mrb, minheap_cls, "to_a", minheap_to_a_m, MRB_ARGS_NONE());
