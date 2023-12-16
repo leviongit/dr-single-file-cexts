@@ -184,7 +184,7 @@ minheap_t *minheap_delete_min(mrb_state *mrb, minheap_t *minheap) {
 }
 
 static const mrb_data_type minheap_datatype = {
-    .struct_name = "Minheap#levi",
+    .struct_name = "MinHeap",
     .dfree = (void (*)(mrb_state *, void *))minheap_free};
 
 mrb_value minheap_alloc_m(mrb_state *mrb, mrb_value klass) {
@@ -263,10 +263,13 @@ void drb_register_c_extensions_with_api(mrb_state *mrb, struct drb_api_t *) {
                     MRB_ARGS_ANY());
   mrb_define_method(mrb, minheap_cls, "insert", minheap_insert_m,
                     MRB_ARGS_REQ(1));
+	mrb_define_method(mrb, minheap_cls, "<<", minheap_insert_m, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, minheap_cls, "peek", minheap_peek_m, MRB_ARGS_NONE());
   mrb_define_method(mrb, minheap_cls, "pop", minheap_pop_m, MRB_ARGS_NONE());
   mrb_define_method(mrb, minheap_cls, "to_a", minheap_to_a_m, MRB_ARGS_NONE());
   mrb_define_method(mrb, minheap_cls, "size", minheap_size_m, MRB_ARGS_NONE());
-  mrb_define_method(mrb, minheap_cls, "length", minheap_size_m, MRB_ARGS_NONE());
-  mrb_define_method(mrb, minheap_cls, "empty?", minheap_empty_p_m, MRB_ARGS_NONE());
+  mrb_define_method(mrb, minheap_cls, "length", minheap_size_m,
+                    MRB_ARGS_NONE());
+  mrb_define_method(mrb, minheap_cls, "empty?", minheap_empty_p_m,
+                    MRB_ARGS_NONE());
 }
