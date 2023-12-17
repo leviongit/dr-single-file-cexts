@@ -1,0 +1,47 @@
+name: minheap - Compile and Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  compile-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          # - windows-latest
+          # - macos-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: kfischer-okarin/download-dragonruby@v1
+        with:
+          license_tier: pro
+      - name: Install Clang 17
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod u+x llvm.sh
+          sudo ./llvm.sh 17
+      - name: Apply patches
+        run: |
+          patch ./include/dragonruby.h include-patches.h.patch
+          patch ./include/dragonruby.h.inc include-patches.inc.patch
+      - name: Compile
+        run: |
+          mkdir -p native/linux-amd64
+          clang-17 ./minheap.c -g -O2 -std=c2x -I./include -fpic -shared -o native/linux-amd64/libminheap.so
+      - name: Run Tests
+        env:
+          # For headless DragonRuby execution
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+        run: |
+          ./dragonruby tests/minheap --test tests.rb | tee tests.log
+          grep -Fq "[Game] 0 test(s) failed." tests.log
