@@ -8,14 +8,14 @@ on:
 
 jobs:
   compile-and-test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          # - windows-latest
-          - macos-latest
+          - ubuntu
+          # - windows
+          - macos
     defaults:
       run:
         shell: bash
@@ -39,14 +39,14 @@ jobs:
           clang-17 ./minheap.c -g -O2 -std=c2x \
                    -I./include -fpic \
                    -shared -o native/linux-amd64/libminheap.so
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu' }}
       - name: Compile
         run: |
           mkdir -p native/macos
           clang-17 ./minheap.c -g -O2 -std=c2x \
                    -I./include -fpic \
                    -shared -arch x86_64 -arch arm64 -o native/macos/libminheap.dylib
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos' }}
       - name: Run Tests
         env:
           # For headless DragonRuby execution
