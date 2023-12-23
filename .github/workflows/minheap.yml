@@ -7,15 +7,9 @@ on:
       - master
 
 jobs:
-  compile-and-test:
-    runs-on: ${{ matrix.os }}-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu
-          # - windows
-          - macos
+  compile-and-test-ubuntu:
+    name: Compile & Test (Linux)
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -29,10 +23,6 @@ jobs:
           wget https://apt.llvm.org/llvm.sh
           chmod u+x llvm.sh
           sudo ./llvm.sh 17
-        if: ${{ matrix.os == 'ubuntu' }}
-      - name: Install Clang 17
-        run: brew install llvm@17
-        if: ${{ matrix.os == 'macos' }}
       - name: Apply patches
         run: |
           patch ./include/dragonruby.h include-patches.h.patch
@@ -43,14 +33,41 @@ jobs:
           clang-17 ./minheap.c -g -O2 -std=c2x \
                    -I./include -fpic \
                    -shared -o native/linux-amd64/libminheap.so
-        if: ${{ matrix.os == 'ubuntu' }}
+      - name: Run Tests
+        env:
+          # For headless DragonRuby execution
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+        run: |
+          ./dragonruby tests/minheap --test tests.rb | tee tests.log
+          grep -Fq "[Game] 0 test(s) failed." tests.log
+  compile-and-test-macos:
+    name: Compile & Test (macOS)
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: kfischer-okarin/download-dragonruby@v1
+        with:
+          license_tier: pro
+      - name: Install Clang 17
+        run: |
+          brew install llvm@17
+      - name: Apply patches
+        run: |
+          patch ./include/dragonruby.h include-patches.h.patch
+          patch ./include/dragonruby.h.inc include-patches.inc.patch
       - name: Compile
         run: |
           mkdir -p native/macos
+          export PATH="/usr/local/opt/llvm/bin:$PATH"
+          export LDFLAGS="-L/usr/local/opt/llvm/lib"
+          export CPPFLAGS="-I/usr/local/opt/llvm/include"
           clang ./minheap.c -g -O2 -std=c2x \
                 -I./include -fpic \
                 -shared -arch x86_64 -arch arm64 -o native/macos/libminheap.dylib
-        if: ${{ matrix.os == 'macos' }}
       - name: Run Tests
         env:
           # For headless DragonRuby execution
