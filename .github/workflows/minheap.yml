@@ -66,7 +66,7 @@ jobs:
           export LDFLAGS="-L/usr/local/opt/llvm/lib"
           export CPPFLAGS="-I/usr/local/opt/llvm/include"
           clang ./minheap.c -g -O2 -std=c2x \
-                -I./include -fpic -Wl,-dynamic-lookup \
+                -I./include -fpic -Wl,-undefined -Wl,dynamic_lookup \
                 -shared -arch x86_64 -arch arm64 -o native/macos/libminheap.dylib
       - name: Run Tests
         env:
