@@ -7,7 +7,7 @@ on:
       - master
 
 env:
-  runci: ${{ !contains(github.event.workflow_run.head_commit.message, "[skipci]") }}
+  runci: ${{ !contains(github.event.workflow_run.head_commit.message, '[skipci]') }}
 
 jobs:
   compile-and-test-ubuntu:
