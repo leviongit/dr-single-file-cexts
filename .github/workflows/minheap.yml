@@ -8,6 +8,7 @@ on:
 
 jobs:
   compile-and-test-ubuntu:
+    if: ${{ !contains(github.event.workflow_run.head_commit.message, '[nolinux]') }}
     name: Compile & Test (Linux)
     runs-on: ubuntu-latest
     defaults:
@@ -42,6 +43,7 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-macos:
+    if: ${{ !contains(github.event.workflow_run.head_commit.message, '[nomac]') }}
     name: Compile & Test (macOS)
     runs-on: macos-latest
     defaults:
@@ -77,6 +79,7 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-windows:
+    if: ${{ !contains(github.event.workflow_run.head_commit.message, '[nowindows]') }}
     name: Compile & Test (windows)
     runs-on: windows-latest
     defaults:
