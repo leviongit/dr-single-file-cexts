@@ -6,12 +6,8 @@ on:
     branches:
       - master
 
-env:
-  runci: ${{ !contains(github.event.workflow_run.head_commit.message, '[skipci]') }}
-
 jobs:
   compile-and-test-ubuntu:
-    if: env.runci
     name: Compile & Test (Linux)
     runs-on: ubuntu-latest
     defaults:
@@ -46,7 +42,6 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-macos:
-    if: env.runci
     name: Compile & Test (macOS)
     runs-on: macos-latest
     defaults:
@@ -82,7 +77,6 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-windows:
-    if: env.runci
     name: Compile & Test (macOS)
     runs-on: windows-latest
     defaults:
