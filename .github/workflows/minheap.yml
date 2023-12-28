@@ -99,8 +99,8 @@ jobs:
           mkdir -p native/windows-amd64
           export MINGW_DIR=/C/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
           clang ./minheap.c -g -O2 -std=c2x -fuse-ld=lld \
-                -I./include -fpic --sysroot=$MINGW_DIR \
-                -shared --target=x86_64-w64-mingw32 -o native/windows-amd64/libminheap.dll
+                -shared --target=x86_64-w64-mingw32 -I./include -fpic --sysroot=$MINGW_DIR \
+                -o native/windows-amd64/libminheap.dll
       - name: Run Tests
         env:
           # For headless DragonRuby execution
