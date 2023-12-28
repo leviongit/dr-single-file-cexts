@@ -77,7 +77,7 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-windows:
-    name: Compile & Test (macOS)
+    name: Compile & Test (windows)
     runs-on: windows-latest
     defaults:
       run:
