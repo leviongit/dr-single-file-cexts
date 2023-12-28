@@ -8,7 +8,6 @@ on:
 
 jobs:
   compile-and-test-ubuntu:
-    if: ${{ !contains(github.event.workflow_run.head_commit.message, '[nolinux]') }}
     name: Compile & Test (Linux)
     runs-on: ubuntu-latest
     defaults:
@@ -43,7 +42,6 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-macos:
-    if: ${{ !contains(github.event.workflow_run.head_commit.message, '[nomac]') }}
     name: Compile & Test (macOS)
     runs-on: macos-latest
     defaults:
@@ -79,7 +77,6 @@ jobs:
           ./dragonruby tests/minheap --test tests.rb | tee tests.log
           grep -Fq "[Game] 0 test(s) failed." tests.log
   compile-and-test-windows:
-    if: ${{ !contains(github.event.workflow_run.head_commit.message, '[nowindows]') }}
     name: Compile & Test (windows)
     runs-on: windows-latest
     defaults:
@@ -102,8 +99,9 @@ jobs:
           mkdir -p native/windows-amd64
           export MINGW_DIR=/C/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
           clang ./minheap.c -g -O2 -std=c2x -fuse-ld=lld \
-                -shared --target=x86_64-w64-mingw32 -I./include -fpic --sysroot=$MINGW_DIR -print-resource-dir \
+                -shared --target=x86_64-w64-mingw32 -I./include -fpic --sysroot=$MINGW_DIR -MJ comp.json \
                 -o native/windows-amd64/libminheap.dll
+          cat comp.json
       - name: Run Tests
         env:
           # For headless DragonRuby execution
