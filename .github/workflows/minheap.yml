@@ -98,7 +98,7 @@ jobs:
         run: |
           mkdir -p native/windows-amd64
           export MINGW_DIR=/C/ProgramData/mingw64/mingw64
-          clang ./minheap.c -g -O2 -std=c2x -fuse-ld=lld \
+          clang ./minheap.c -g -O2 -std=c2x -fuse-ld=lld -Wl,-undefined -Wl,dynamic_lookup \
                 -shared -I./include -fpic --sysroot=$MINGW_DIR --target=x86_64-w64-mingw32 \
                 -o native/windows-amd64/libminheap.dll
       - name: Run Tests
