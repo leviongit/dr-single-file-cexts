@@ -100,7 +100,7 @@ jobs:
           export MINGW_DIR=/C/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
           clang ./minheap.c -g -O2 -std=c2x -fuse-ld=lld \
                 -shared --target=x86_64-w64-mingw32 -I./include -fpic --sysroot=$MINGW_DIR -MJ comp.json \
-                -o native/windows-amd64/libminheap.dll
+                -o native/windows-amd64/libminheap.dll || (cat comp.json && 1)
           cat comp.json
       - name: Run Tests
         env:
