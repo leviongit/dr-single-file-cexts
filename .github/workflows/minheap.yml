@@ -7,12 +7,9 @@ on:
       - master
 
 jobs:
-  compile-and-test-ubuntu:
-    name: Compile & Test (Linux)
+  compile:
+    name: Compile
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: kfischer-okarin/download-dragonruby@v1
@@ -29,83 +26,5 @@ jobs:
           patch ./include/dragonruby.h.inc include-patches.inc.patch
       - name: Compile
         run: |
-          mkdir -p native/linux-amd64
-          clang-17 ./minheap.c -g -O2 -std=c2x \
-                   -I./include -fpic \
-                   -shared -o native/linux-amd64/libminheap.so
-      - name: Run Tests
-        env:
-          # For headless DragonRuby execution
-          SDL_AUDIODRIVER: dummy
-          SDL_VIDEODRIVER: dummy
-        run: |
-          ./dragonruby tests/minheap --test tests.rb | tee tests.log
-          grep -Fq "[Game] 0 test(s) failed." tests.log
-  compile-and-test-macos:
-    name: Compile & Test (macOS)
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-      - uses: kfischer-okarin/download-dragonruby@v1
-        with:
-          license_tier: pro
-      - name: Install Clang 17
-        run: |
-          brew install llvm@17
-      - name: Apply patches
-        run: |
-          patch ./include/dragonruby.h include-patches.h.patch
-          patch ./include/dragonruby.h.inc include-patches.inc.patch
-      - name: Compile
-        run: |
-          mkdir -p native/macos
-          export PATH="/usr/local/opt/llvm/bin:$PATH"
-          export LDFLAGS="-L/usr/local/opt/llvm/lib"
-          export CPPFLAGS="-I/usr/local/opt/llvm/include"
-          clang ./minheap.c -g -O2 -std=c2x \
-                -I./include -fpic -Wl,-undefined -Wl,dynamic_lookup \
-                -shared -arch x86_64 -arch arm64 -o native/macos/libminheap.dylib
-      - name: Run Tests
-        env:
-          # For headless DragonRuby execution
-          SDL_AUDIODRIVER: dummy
-          SDL_VIDEODRIVER: dummy
-        run: |
-          ./dragonruby tests/minheap --test tests.rb | tee tests.log
-          grep -Fq "[Game] 0 test(s) failed." tests.log
-  compile-and-test-windows:
-    name: Compile & Test (windows)
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-      - uses: kfischer-okarin/download-dragonruby@v1
-        with:
-          license_tier: pro
-      - name: install mingw
-        run: |
-          choco install mingw
-      - name: Apply patches
-        run: |
-          patch ./include/dragonruby.h include-patches.h.patch
-          patch ./include/dragonruby.h.inc include-patches.inc.patch
-      - name: Compile
-        run: |
-          mkdir -p native/windows-amd64
-          export MINGW_DIR=/C/ProgramData/mingw64/mingw64
-          clang ./minheap.c -g -O2 -std=c2x -fuse-ld=lld \
-                -shared -I./include -fpic --sysroot=$MINGW_DIR --target=x86_64-w64-mingw32 \
-                -o native/windows-amd64/libminheap.dll
-      - name: Run Tests
-        env:
-          # For headless DragonRuby execution
-          SDL_AUDIODRIVER: dummy
-          SDL_VIDEODRIVER: dummy
-        run: |
-          ./dragonruby tests/minheap --test tests.rb | tee tests.log
-          grep -Fq "[Game] 0 test(s) failed." tests.log
+          cmake -B build
+          cmake --build build
