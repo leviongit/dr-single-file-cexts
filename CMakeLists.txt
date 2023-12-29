@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19)
 
 project(dr-single-file-cexts)
 
-set(CMAKE_C_COMPILER clang)
+set(CMAKE_C_COMPILER clang-17)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
