@@ -1,3 +1,4 @@
+#include <__stddef_size_t.h>
 #include <dragonruby.h>
 #include <mruby.h>
 #include <mruby/object.h>
@@ -44,6 +45,10 @@ minheap_t *minheap_new(mrb_state *mrb, uint8_t layers) {
 void minheap_free(mrb_state *mrb, minheap_t *minheap) {
   if (minheap == nullptr)
     return;
+
+  for (size_t i = 0; i < minheap->size; ++i)
+    mrb_gc_unregister(mrb, minheap->data[i]);
+
   mrb_free(mrb, minheap->data);
   mrb_free(mrb, minheap);
 }
@@ -124,6 +129,7 @@ minheap_t *minheap_insert(mrb_state *mrb, minheap_t *minheap, mrb_value val) {
 
   size_t curr = minheap->size++;
   minheap->data[curr] = val;
+  mrb_gc_register(mrb, val);
 
   mrb_value *data = minheap->data;
 
@@ -175,6 +181,7 @@ minheap_t *minheap_delete_min(mrb_state *mrb, minheap_t *minheap) {
   size_t size = minheap->size;
   mrb_value last = minheap->data[size - 1];
 
+  mrb_gc_unregister(mrb, minheap->data[0]);
   minheap->data[0] = last;
 
   --minheap->size;
@@ -202,7 +209,6 @@ mrb_value minheap_init_m(mrb_state *mrb, mrb_value self) {
 
   for (mrb_int i = 0; i < ct; ++i) {
     mrb_value val = args[i];
-    mrb_gc_register(mrb, val);
     minheap_insert(mrb, minheap, val);
   }
   return mrb_nil_value();
@@ -210,7 +216,6 @@ mrb_value minheap_init_m(mrb_state *mrb, mrb_value self) {
 
 mrb_value minheap_insert_m(mrb_state *mrb, mrb_value self) {
   const mrb_value arg = mrb_get_arg1(mrb);
-  mrb_gc_register(mrb, arg);
   minheap_insert(mrb, mrb_data_check_get_ptr(mrb, self, &minheap_datatype),
                  arg);
   return self;
@@ -224,7 +229,6 @@ mrb_value minheap_pop_m(mrb_state *mrb, mrb_value self) {
   minheap_t *minheap = mrb_data_check_get_ptr(mrb, self, &minheap_datatype);
   const mrb_value top = minheap_get_top(minheap);
   minheap_delete_min(mrb, minheap);
-  mrb_gc_unregister(mrb, top);
 
   return top;
 }
