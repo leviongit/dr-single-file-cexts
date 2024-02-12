@@ -1,4 +1,3 @@
-#include <__stddef_size_t.h>
 #include <dragonruby.h>
 #include <mruby.h>
 #include <mruby/object.h>
