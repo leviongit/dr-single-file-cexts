@@ -21,6 +21,10 @@ def test_minheap_custom_objects(_args, assert)
   assert.equal! heap.pop, [5, :red]
   assert.equal! heap.pop, [7, { hp: 100 }]
   assert.equal! heap.pop, [10, 'Bob']
+
+  assert.fail 'Expected this to fail!'
+rescue RuntimeError
+  assert.ok!
 end
 
 # This gives me some malloc errors - TODO Fix
