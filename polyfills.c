@@ -27,8 +27,8 @@ static mrb_value integer_aref(mrb_state *mrb, mrb_value self) {
       span = mrb_integer(mrb_to_int(mrb, endv)) - begin + (range->excl ? 0 : 1);
     }
   } else {
-    mrb_raisef(mrb, E_TYPE_ERROR,
-               "%v! cannot be converted to integer nor range");
+    mrb_raisef(mrb, E_TYPE_ERROR, "%Y cannot be converted to integer nor range",
+               int_range);
   }
 
   if (span == 0)
