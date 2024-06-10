@@ -4,25 +4,24 @@
 
 static mrb_value integer_aref(mrb_state *mrb, mrb_value self) {
   mrb_value int_range;
-  mrb_int span = 0;
+  mrb_int span = 1;
   mrb_bool second_given;
 
   mrb_get_args(mrb, "o|i?", &int_range, &span, &second_given);
 
   size_t value = mrb_integer(self);
-  mrb_int begin;
+  mrb_int begin = 0;
 
   if (second_given) {
     begin = mrb_integer(mrb_to_int(mrb, int_range));
   } else if (mrb_integer_p(int_range)) {
-    begin = 0;
     span = mrb_integer(int_range);
   } else if (mrb_range_p(int_range)) {
     struct RRange *range = mrb_range_ptr(mrb, int_range);
     begin = mrb_integer(mrb_to_int(mrb, range->beg));
     mrb_value endv = range->end;
     if (mrb_nil_p(endv)) {
-      span = sizeof(size_t) * CHAR_BIT - begin + 1;
+      span = sizeof(size_t) * CHAR_BIT - begin;
     } else {
       span = mrb_integer(mrb_to_int(mrb, endv)) - begin + (range->excl ? 0 : 1);
     }
