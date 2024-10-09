@@ -162,8 +162,9 @@ mrb_value xoro_rand_rand(mrb_state *mrb, mrb_value self) {
     if (a_int_p && b_int_p) {
       mrb_int ia = mrb_integer(a);
       mrb_int ib = mrb_integer(b);
-      if (ib < ia) return mrb_nil_value();
-            
+      if (ib < ia)
+        return mrb_nil_value();
+
       mrb_int span = ib - ia + (mrb_int)!mrb_range_excl_p(mrb, arg);
       if (span == 0)
         return mrb_nil_value();
@@ -174,7 +175,8 @@ mrb_value xoro_rand_rand(mrb_state *mrb, mrb_value self) {
 
     mrb_float fa = a_int_p ? (mrb_float)mrb_integer(a) : mrb_float(a);
     mrb_float fb = a_int_p ? (mrb_float)mrb_integer(b) : mrb_float(b);
-    if (fb < fa) return mrb_nil_value();
+    if (fb < fa)
+      return mrb_nil_value();
 
     mrb_float span = fb - fa;
     if (span == 0.0)
@@ -192,9 +194,32 @@ mrb_value xoro_rand_rand_bool([[maybe_unused]] mrb_state *mrb, mrb_value self) {
       xoroshiro128p_next_bool((struct xoroshiro128p_st *)ISTRUCT_PTR(self)));
 }
 
+mrb_value xoro_rand_jump_b([[maybe_unused]] mrb_state *mrb, mrb_value self) {
+  xoroshiro128p_jump((struct xoroshiro128p_st *)ISTRUCT_PTR(self));
+  return self;
+}
+
+mrb_value xoro_rand_jump(mrb_state *mrb, mrb_value self) {
+  mrb_value newv = mrb_obj_dup(mrb, self);
+  xoro_rand_jump_b(mrb, newv);
+  return newv;
+}
+
+mrb_value xoro_rand_long_jump_b([[maybe_unused]] mrb_state *mrb,
+                                mrb_value self) {
+  xoroshiro128p_long_jump((struct xoroshiro128p_st *)ISTRUCT_PTR(self));
+  return self;
+}
+
+mrb_value xoro_rand_long_jump(mrb_state *mrb, mrb_value self) {
+  mrb_value newv = mrb_obj_dup(mrb, self);
+  xoro_rand_long_jump_b(mrb, newv);
+  return newv;
+}
+
 void drb_register_c_extensions_with_api(mrb_state *mrb, void *) {
   xoroshiro128p = mrb_define_class_id(mrb, mrb_intern_lit(mrb, "Xoroshiro128"),
-                                       mrb->object_class);
+                                      mrb->object_class);
   mrb_define_class_method_id(mrb, xoroshiro128p,
                              mrb_intern_lit(mrb, "allocate"), xoro_rand_alloc,
                              MRB_ARGS_NONE());
@@ -207,6 +232,14 @@ void drb_register_c_extensions_with_api(mrb_state *mrb, void *) {
                        xoro_rand_rand, MRB_ARGS_OPT(1));
   mrb_define_method_id(mrb, xoroshiro128p, mrb_intern_lit(mrb, "rand_bool"),
                        xoro_rand_rand_bool, MRB_ARGS_NONE());
+  mrb_define_method_id(mrb, xoroshiro128p, mrb_intern_lit(mrb, "jump!"),
+                       xoro_rand_jump_b, MRB_ARGS_NONE());
+  mrb_define_method_id(mrb, xoroshiro128p, mrb_intern_lit(mrb, "jump"),
+                       xoro_rand_jump, MRB_ARGS_NONE());
+  mrb_define_method_id(mrb, xoroshiro128p, mrb_intern_lit(mrb, "long_jump!"),
+                       xoro_rand_long_jump_b, MRB_ARGS_NONE());
+  mrb_define_method_id(mrb, xoroshiro128p, mrb_intern_lit(mrb, "long_jump"),
+                       xoro_rand_long_jump, MRB_ARGS_NONE());
 
   MRB_SET_INSTANCE_TT(xoroshiro128p, MRB_TT_ISTRUCT);
 }
